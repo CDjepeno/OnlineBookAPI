@@ -1,0 +1,138 @@
+import { MySQLBook } from "../entities/MySQLBook";
+import { DataSource } from "typeorm"
+
+
+
+
+
+/* async function getConfigs() {
+  return {
+    type: "mysql",
+    host: "book-db-instance-1.cs5tuvhfyanp.eu-west-1.rds.amazonaws.com",
+    port: 3306,
+    username: "admin",
+    password: "bonjour950",
+    database: "book-db",
+    namedPlaceholders: true,
+    // TODO: Overwrite for RDS proxy
+    // host: process.env.DB_HOST,
+  };
+} */
+
+/* async function initConnection() {
+  // We get the TypeORM configuration (with entities, migrations, etc...)
+  // We get the database configuration with environment variables
+  const envConfig = await getConfigs();
+  return await AppDataSource.initialize();
+} */
+
+export class AuroraConfig {
+
+  private static instance: AuroraConfig;
+
+  _conf: {} 
+
+
+  private constructor() {
+    this._conf = new DataSource({
+      type: "mysql",
+      host: "db2-instance-1.cubvgnvn7qfi.eu-west-1.rds.amazonaws.com",
+      port: 3306,
+      username: "admin",
+      password: "Password123",
+      database: "db2",
+    
+      synchronize: true,
+      logging: false,
+      migrations: [],
+    })
+  }
+
+  static getInstance()
+  {
+    if(!AuroraConfig.instance) {
+      AuroraConfig.instance = new AuroraConfig()
+    }
+
+    return AuroraConfig.instance
+  } 
+
+  get conf() {
+    return this._conf
+  }
+
+
+}
+
+
+/* getConnexion() {
+
+  AppDataSource.initialize()
+
+  .then(async () => {
+
+    const book = new MySQLBook();
+
+    book.author = "blackos";
+    book.genre = "M";
+    book.image = "image";
+    book.title = "Blackos2";
+    await AppDataSource.manager.save(book);
+
+  })
+  .catch((error) => console.log(error));
+} */
+
+import { getDataSource } from "../datasource";
+import { MySQLBook } from "../entities/MySQLBook";
+
+
+
+const init = async () => {
+
+  const AppDataSource = await getDataSource();
+
+
+  const book = new MySQLBook()
+  book.title = "title4"
+  book.genre = "genre4"
+  book.author = "author4"
+  book.image ="images4"
+
+  AppDataSource.manager.save(book); 
+  console.log('saved book')
+
+  const getBook = await AppDataSource.getRepository(MySQLBook).findOne({where: {id:2}})
+  console.log('all books', getBook)
+  
+}
+
+init()
+
+
+export function getConnexion() {
+  AppDataSource.initialize()
+    .then(() => {
+      console.log("ok db");
+    })
+    .catch((error) => console.log(error));
+}
+
+getConnexion();
+
+AppDataSource.initialize()
+  .then(async () => {
+    console.log("Connection initialized with database...");
+  })
+  .catch((error) => console.log(error));
+
+
+export const getDataSource = (delay = 3000): Promise<DataSource> => {
+  if (AppDataSource.isInitialized) return Promise.resolve(AppDataSource);
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (AppDataSource.isInitialized) resolve(AppDataSource);
+      else reject("Failed to create connection with database");
+    }, delay);
+  });

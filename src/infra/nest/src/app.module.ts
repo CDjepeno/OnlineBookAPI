@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { User } from './users/user.entity';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -20,25 +22,13 @@ import { UsersModule } from './users/users.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [],
+        entities: [User],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
 
-    AuthModule,
     UsersModule
-
-    // TypeOrmModule.forRoot({ 
-    //   type: 'mysql',
-    //   host: 'localhost',
-    //   port: 3306,
-    //   username: 'root',
-    //   password: 'Bonjour_12',
-    //   database: 'book_db',
-    //   entities: [],
-    //   synchronize: true,
-    // }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,6 @@
-import { UserDTO } from '../../../../Entities/User'
-import { IUserRepository } from '../../../../Repository/UserRepository'
-import { AddUserResponse } from './AddUserResponse'
+import { UserDTO } from ''
+import { IUserRepository } from ''
+import { AddUserResponse } from ''
 
 export class AddUser {
     constructor(private repository: IUserRepository) {}
